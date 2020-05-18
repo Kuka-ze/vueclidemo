@@ -13,7 +13,7 @@ data(){
     }
 },
 created(){
-console.log('11111')
+console.log('登陆组件')
 }
 }
 </script>
