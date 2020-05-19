@@ -1,6 +1,6 @@
 <template>
   <div>
-      <p>登陆</p>
+      
   </div>
 </template>
 
@@ -13,7 +13,7 @@ data(){
     }
 },
 created(){
-console.log('登陆组件')
+    console.log('登陆组件')
 }
 }
 </script>
