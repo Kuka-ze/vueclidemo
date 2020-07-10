@@ -68,20 +68,24 @@ export default {
         console.log('error', err)
       });
     },
-    handlelogin () {
+    async handlelogin () {
       //登陆方法
-      this.$http.post('https://mockapi.eolinker.com/s5CFVvec061dcb0e6ae9baadf5562c84c31ff313b21578e/demo/user/login', this.ruleForm).then(res => {
-        console.log(res)
-
-        // 1、将登陆成功之后的token, 保存到客户端的sessionStorage中; localStorage中是持久化的保存
-        //   1.1 项目中出现了登录之外的其他API接口，必须在登陆之后才能访问
-        //   1.2 token 只应在当前网站打开期间生效，所以将token保存在sessionStorage中
-        window.sessionStorage.setItem('token', res.data.token)
-        // 2、通过编程式导航跳转到后台主页, 路由地址为：/home
+      const url = 'https://mockapi.eolinker.com/s5CFVvec061dcb0e6ae9baadf5562c84c31ff313b21578e/demo/user/login'
+      const res = await this.$http.post(url, this.ruleForm)
+      const { data } = res.data
+      if (status === 200) {
         this.$router.push('/home')
-      }).catch((err) => {
-        console.log('error', err)
-      });
+        console.log(data)
+      } else {
+        //   
+        console.log('msg')
+      }
+      //   this.$http.post('https://mockapi.eolinker.com/s5CFVvec061dcb0e6ae9baadf5562c84c31ff313b21578e/demo/user/login', this.ruleForm).then(res => {
+      //     console.log(res)
+      //     this.$router.push('/home')
+      //   }).catch((err) => {
+      //     console.log('error', err)
+      //   });
     },
 
     submitForm () {
@@ -89,7 +93,13 @@ export default {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           console.log('提交的表单', this.ruleForm)
-          this.handlelogin()
+          const { user_name, user_password } = this.ruleForm
+          if (user_name == 'admin' && user_password == '12345') {
+            this.$router.push('/home')
+          } else {
+            alert('用户名或者密码错误')
+          }
+          //   this.handlelogin()
         } else {
           console.log('error submit!!');
           return false;

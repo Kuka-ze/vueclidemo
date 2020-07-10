@@ -4,34 +4,27 @@
     <el-header>
       <div>
         <img src="../assets/logo.png" alt />
-        <span>电商后台管理系统</span>
+        <span>后台管理系统</span>
       </div>
       <el-button type="info" @click="logout">退出</el-button>
     </el-header>
     <!-- 主体 -->
     <el-container>
       <!-- 侧边栏 -->
-      <el-aside :width="isCollapse ? '64px' : '200px'">
+      <el-aside :width="isCollapse ? '50px' : '200px'">
         <div class="toggle-button" @click="togleCollapse">|||</div>
         <el-menu unique-opened :collapse="isCollapse" :collapse-transition="false" router :default-active="activePath" background-color="#333744" text-color="#fff" active-text-color="#409FFF">
-          <!-- :unique-opened="true"->只允许展开一个菜单 -->
-          <!-- :collapse-transition="false" -> 关闭动画 -->
-          <!-- router -> 导航开启路由模式 -->
-          <!-- 一级菜单  -->
-          <el-submenu :index="item.id+''" v-for="item in menuList" :key="item.id">
+          <el-submenu :index="item.menuid" v-for="item in menuList" :key="item.menuid">
             <!-- 一级菜单的模板区域 -->
             <template slot="title">
-              <i :class="iconObj[item.id]"></i>
-              <span>{{ item.authName}}</span>
+              <i :class="item.icon"></i>
+              <span class="menu-color">{{ item.menuname}}</span>
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id" @click="saveNavState('/' + subItem.path)">
-              <!-- 导航开启路由模式：
-                将index值作为导航路由 -->
-              <!-- 二级菜单的模板区域 -->
+            <el-menu-item v-for="subItem in item.children" :key="subItem.menuid">
               <template slot="title">
-                <i class="el-icon-menu"></i>
-                <span>{{ subItem.authName}}</span>
+                <i :class="subItem.icon"></i>
+                <router-link :to="subItem.url"> <span style="color:#fff;">{{subItem.authName}}</span></router-link>
               </template>
             </el-menu-item>
           </el-submenu>
@@ -51,43 +44,42 @@ export default {
     return {
       // 左侧菜单数据
       menuList: [],
-      iconObj: {
-        '125': 'iconfont icon-user',
-        '103': 'iconfont icon-tijikongjian',
-        '101': 'iconfont icon-shangpin',
-        '102': 'iconfont icon-danju',
-        '145': 'iconfont icon-baobiao'
-      },
       // 默认不折叠
       isCollapse: false,
       // 被激活导航地址
-      activePath: ''
+      activePath: '2-1'
     }
   },
   created () {
     this.getMenuList()
-    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     logout () {
-      // 清空token
-      window.sessionStorage.clear()
       this.$router.push('/login')
     },
     // 获取请求菜单
     async getMenuList () {
-      const { data: res } = await this.$http.get('menus')
-      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-      this.menuList = res.data
-      // console.log(res)
+      const res = [
+        {          "menuid": "01", "menuname": "用户管理", "icon": "el-icon-user", "url": "/User/Index",
+          "children": [
+            { "menuid": "1-1", "authName": "用户注册", "icon": "el-icon-user", "url": "/users", }
+          ]
+        },
+        {          "menuid": "02", "menuname": "组织机构管理", "icon": "icon-organ", "url": "/OU/Index",
+          "children": [
+            { "menuid": "2-1", "authName": "组织管理", "icon": "el-icon-coffee", "url": "/manner", }
+          ]
+        },
+        { "menuid": "03", "menuname": "角色管理", "icon": "icon-group-key", "url": "/Role/Index" },
+        { "menuid": "04", "menuname": "功能管理", "icon": "icon-key", "url": "/Function/Index" },
+        { "menuid": "05", "menuname": "登陆日志", "icon": "icon-view", "url": "/LoginLog/Index" }
+      ]
+      this.menuList = res
+      console.log(res)
     },
     // 菜单的折叠与展开
     togleCollapse () {
       this.isCollapse = !this.isCollapse
-    },
-    // 保存连接的激活地址
-    saveNavState (activePath) {
-      window.sessionStorage.setItem('activePath', activePath)
     }
   }
 }
@@ -136,7 +128,9 @@ export default {
   color: #fff;
   text-align: center;
   letter-spacing: 0.2em;
-  // 鼠标放上去变成小手
   cursor: pointer;
+}
+.menu-color {
+  color: #f00;
 }
 </style>
